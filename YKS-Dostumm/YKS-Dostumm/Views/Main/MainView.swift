@@ -98,7 +98,8 @@ struct MainView: View {
                 ResourcesView(viewModel: ResourcesViewModel())
             case .library:
                 NearbyLibrariesView(viewModel: NearbyLibrariesViewModel())
-            
+            case .timers:
+                TimersView(viewModel: TimersViewModel())
             case .settings:
                 SettingsView(viewModel: SettingsViewModel())
             }
