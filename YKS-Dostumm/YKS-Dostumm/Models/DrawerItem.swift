@@ -8,6 +8,7 @@ enum DrawerItemType: String, Identifiable, CaseIterable {
     case testResults = "Deneme Sonuçları"
     case aiAssistant = "YKS Asistanı"
     case resources = "Kaynaklar"
+    case timers = "Sayaç"
     case settings = "Ayarlar"
     case library = "Yakınımdaki Kütüphaneler"
     var id: String { self.rawValue }
@@ -21,6 +22,7 @@ enum DrawerItemType: String, Identifiable, CaseIterable {
         case .aiAssistant: return "bubble.left.and.bubble.right.fill"
         case .resources: return "book.fill"
         case .library : return "books.vertical.fill"
+        case .timers: return "timer"
         case .settings: return "gearshape.fill"
         }
     }
@@ -34,6 +36,7 @@ enum DrawerItemType: String, Identifiable, CaseIterable {
         case .aiAssistant: return .pink
         case .resources: return .yellow
         case .library : return .orange
+        case .timers: return .red
         case .settings: return .gray
         }
     }
