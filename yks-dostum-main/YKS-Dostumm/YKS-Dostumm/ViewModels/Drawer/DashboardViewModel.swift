@@ -4,7 +4,7 @@ import Combine
 class DashboardViewModel: BaseViewModelImpl {
     @Published var welcomeMessage: String = ""
     @Published var todoItems: [TodoItem] = []
-    @Published var studyStats: StudyStats = StudyStats()
+    @Published var studyStats: DashboardStudyStats = DashboardStudyStats()
     @Published var nextExamDate: Date?
     
     private var cancellables = Set<AnyCancellable>()
@@ -68,7 +68,7 @@ class DashboardViewModel: BaseViewModelImpl {
             ]
             
             // Sample study stats
-            self.studyStats = StudyStats(
+            self.studyStats = DashboardStudyStats(
                 dailyStudyHours: 4.5,
                 weeklyStudyHours: 28.5,
                 completedTopics: 42,
@@ -144,7 +144,7 @@ struct TodoItem: Identifiable {
     var isCompleted: Bool
 }
 
-struct StudyStats {
+struct DashboardStudyStats {
     var dailyStudyHours: Double = 0
     var weeklyStudyHours: Double = 0
     var completedTopics: Int = 0

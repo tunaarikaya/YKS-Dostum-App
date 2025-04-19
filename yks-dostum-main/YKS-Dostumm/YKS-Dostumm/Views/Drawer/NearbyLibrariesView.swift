@@ -9,33 +9,35 @@ struct NearbyLibrariesView: View {
         VStack(spacing: 0) {
             // Map View
             ZStack(alignment: .bottomTrailing) {
-                Map(coordinateRegion: $viewModel.region, showsUserLocation: true, annotationItems: viewModel.libraries) { library in
-                    MapAnnotation(coordinate: library.coordinate) {
-                        VStack {
-                            Image(systemName: "building.columns.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.purple)
-                                .background(
-                                    Circle()
-                                        .fill(Color.white)
-                                        .frame(width: 36, height: 36)
-                                )
-                                .shadow(radius: 2)
-                            
-                            if viewModel.selectedLibrary?.id == library.id {
-                                Text(library.name)
-                                    .font(.caption)
-                                    .fontWeight(.bold)
-                                    .padding(5)
-                                    .background(Color.white.opacity(0.8))
-                                    .cornerRadius(5)
-                                    .shadow(radius: 1)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: 150)
+                Map {
+                    ForEach(viewModel.libraries) { library in
+                        Annotation(library.name, coordinate: library.coordinate) {
+                            VStack {
+                                Image(systemName: "building.columns.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.purple)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white)
+                                            .frame(width: 36, height: 36)
+                                    )
+                                    .shadow(radius: 2)
+                                
+                                if viewModel.selectedLibrary?.id == library.id {
+                                    Text(library.name)
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .padding(5)
+                                        .background(Color.white.opacity(0.8))
+                                        .cornerRadius(5)
+                                        .shadow(radius: 1)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: 150)
+                                }
                             }
-                        }
-                        .onTapGesture {
-                            viewModel.selectLibrary(library)
+                            .onTapGesture {
+                                viewModel.selectLibrary(library)
+                            }
                         }
                     }
                 }

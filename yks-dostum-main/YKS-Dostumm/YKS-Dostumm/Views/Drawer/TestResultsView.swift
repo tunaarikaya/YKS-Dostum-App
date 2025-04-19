@@ -350,7 +350,7 @@ struct AddTestResultView: View {
                     }
                     
                     Stepper("Doğru: \(correctAnswers)", value: $correctAnswers, in: 0...totalQuestions)
-                        .onChange(of: correctAnswers) { newValue in
+                        .onChange(of: correctAnswers) { oldValue, newValue in
                             // Adjust empty answers to ensure total is correct
                             let total = newValue + wrongAnswers
                             if total > totalQuestions {
@@ -360,7 +360,7 @@ struct AddTestResultView: View {
                         }
                     
                     Stepper("Yanlış: \(wrongAnswers)", value: $wrongAnswers, in: 0...totalQuestions)
-                        .onChange(of: wrongAnswers) { newValue in
+                        .onChange(of: wrongAnswers) { oldValue, newValue in
                             // Adjust empty answers to ensure total is correct
                             let total = correctAnswers + newValue
                             if total > totalQuestions {

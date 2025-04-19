@@ -1,21 +1,25 @@
 import Foundation
+import SwiftUI
 import Combine
 
-class AIAssistantViewModel: BaseViewModelImpl {
+
+class ChatViewModel: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var inputText: String = ""
     @Published var isTyping: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
-    private let geminiService = GeminiService()
+    private let geminiService: GeminiService
     
-    override init() {
-        super.init()
+    init() {
+        // MARK: Gemini API anahtarınızı buraya ekleyin
+        // Not: Bu sadece geliştirme amaçlıdır. Uygulama yayınlanmadan önce daha güvenli bir yaklaşım kullanın
+        let apiKey = "AIzaSyDGT4zE3EEqDDcK0f0KEHW-NHJ741akjGo"
+        self.geminiService = GeminiService(apiKey: apiKey)
         loadInitialMessages()
     }
     
     private func loadInitialMessages() {
-        // Add welcome message from the assistant
         let welcomeMessage = ChatMessage(
             id: UUID(),
             sender: .assistant,
@@ -37,26 +41,29 @@ class AIAssistantViewModel: BaseViewModelImpl {
         )
         messages.append(userMessage)
         
-        // Clear input
+        // Clear input and store message
         let userInput = inputText
         inputText = ""
         
         // Set AI thinking state
         isTyping = true
         
-        // Format the prompt with system instructions
-        let formattedPrompt = formatPromptWithSystemInstructions(userInput)
+        print("Sending message to ChatGPT: \(userInput.prefix(30))...")
+        
+        // Cancel any existing requests
+        cancellables.removeAll()
         
         // Call Gemini API
-        geminiService.generateResponse(prompt: formattedPrompt)
+        geminiService.generateResponse(prompt: userInput)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 if case .failure(let error) = completion {
                     print("Error generating response: \(error.localizedDescription)")
-                    self?.handleAPIError()
+                    self?.handleAPIError(error)
                 }
             }, receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                print("Received successful response from Gemini")
                 
                 // Add AI response
                 let assistantMessage = ChatMessage(
@@ -71,42 +78,42 @@ class AIAssistantViewModel: BaseViewModelImpl {
             .store(in: &cancellables)
     }
     
-    // Fallback method in case the API fails
-    private func handleAPIError() {
+    private func handleAPIError(_ error: Error? = nil) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            
+            var errorContent = "Üzgünüm, şu anda yanıt oluşturamıyorum. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin."
+            
+            if let error = error {
+                print("API error details: \(error.localizedDescription)")
+                
+                if let nsError = error as NSError? {
+                    if nsError.domain == NSURLErrorDomain {
+                        switch nsError.code {
+                        case NSURLErrorNotConnectedToInternet:
+                            errorContent = "İnternet bağlantınızı kontrol edin ve tekrar deneyin."
+                        case NSURLErrorTimedOut:
+                            errorContent = "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
+                        default:
+                            errorContent = "Bir hata oluştu (\(nsError.code)). Lütfen tekrar deneyin."
+                        }
+                    }
+                }
+            }
             
             let errorMessage = ChatMessage(
                 id: UUID(),
                 sender: .assistant,
-                content: "Üzgünüm, şu anda yanıt oluşturamıyorum. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.",
+                content: errorContent,
                 timestamp: Date()
             )
             self.messages.append(errorMessage)
             self.isTyping = false
         }
     }
-    
-    // Format the user prompt with system instructions
-    private func formatPromptWithSystemInstructions(_ userPrompt: String) -> String {
-        return """
-        Sen YKS sınavına hazırlanan Türk öğrencilere yardımcı olan bir eğitim asistanısın. 
-        Adın "YKS Asistanı". Türkçe yanıt ver.
-        
-        Şu konularda yardımcı olabilirsin:
-        - YKS sınavı hakkında bilgi (TYT ve AYT)
-        - Ders çalışma teknikleri ve verimli çalışma yöntemleri
-        - Spesifik dersler hakkında bilgi ve ipuçları (Matematik, Fizik, Kimya, Biyoloji, Türkçe, Tarih, Coğrafya, vb.)
-        - Motivasyon ve stres yönetimi
-        - Sınav stratejileri
-        
-        Yanıtların kısa, öz ve anlaşılır olmalı. Öğrencilere yardımcı olacak pratik tavsiyeler ver.
-        Öğrencinin sorusu: \(userPrompt)
-        """
-    }
 }
 
-// Models used by the AI Assistant
+// MARK: - Message Models
 enum MessageSender {
     case user
     case assistant

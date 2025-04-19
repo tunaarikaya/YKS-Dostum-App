@@ -1,40 +1,27 @@
 import SwiftUI
-import UIKit
 
-struct AIAssistantView: View {
-    @ObservedObject var viewModel: AIAssistantViewModel
+struct ChatView: View {
+    @StateObject private var viewModel = ChatViewModel()
     @FocusState private var isInputFocused: Bool
     @State private var keyboardHeight: CGFloat = 0
     
-    // Function to dismiss keyboard
     private func dismissKeyboard() {
         isInputFocused = false
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
     
     var body: some View {
-        // Setup keyboard observers
-        let keyboardWillShow = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
-            .map { notification -> CGFloat in
-                if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                    return keyboardFrame.height
-                }
-                return 0
-            }
-        
-        let keyboardWillHide = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
-            .map { _ -> CGFloat in 0 }
-            
         VStack(spacing: 0) {
             // Chat Messages
             ScrollViewReader { scrollView in
                 ScrollView {
-                    // Add tap gesture to dismiss keyboard when tapping on the scroll view
+                    // Add tap gesture to dismiss keyboard
                     Color.clear
                         .contentShape(Rectangle())
                         .onTapGesture {
                             dismissKeyboard()
                         }
+                    
                     LazyVStack(spacing: 15) {
                         ForEach(viewModel.messages) { message in
                             MessageBubbleView(message: message)
@@ -60,14 +47,14 @@ struct AIAssistantView: View {
                     }
                     .padding()
                 }
-                .onChange(of: viewModel.messages.count) { _ in
+                .onChange(of: viewModel.messages.count) { oldValue, newValue in
                     if let lastMessage = viewModel.messages.last {
                         withAnimation {
                             scrollView.scrollTo(lastMessage.id, anchor: .bottom)
                         }
                     }
                 }
-                .onChange(of: viewModel.isTyping) { _ in
+                .onChange(of: viewModel.isTyping) { oldValue, newValue in
                     withAnimation {
                         scrollView.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
                     }
@@ -80,6 +67,7 @@ struct AIAssistantView: View {
                 Divider()
                 
                 HStack(spacing: 15) {
+                    // Text Input Field
                     ZStack {
                         TextField("Bir soru sor...", text: $viewModel.inputText)
                             .padding(12)
@@ -97,8 +85,10 @@ struct AIAssistantView: View {
                     }
                     .frame(minHeight: 44)
                     
+                    // Send Button
                     Button(action: {
                         viewModel.sendMessage()
+                        dismissKeyboard()
                     }) {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.system(size: 30))
@@ -107,27 +97,12 @@ struct AIAssistantView: View {
                     .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isTyping)
                 }
                 .padding(.horizontal)
-                .padding(.vertical, 15)
-                .padding(.bottom, keyboardHeight > 0 ? 10 : 0)
-                .background(Color(UIColor.systemBackground))
-                .onTapGesture {
-                    isInputFocused = true
-                }
+                .padding(.vertical, 10)
             }
-            // Proper keyboard spacing with SafeArea consideration
-            .padding(.bottom, keyboardHeight > 0 ? max(keyboardHeight - 15, 0) : 0)
+            .background(Color(UIColor.systemBackground))
         }
-        .onReceive(keyboardWillShow) { height in
-            withAnimation(.easeOut(duration: 0.25)) {
-                self.keyboardHeight = height
-            }
-        }
-        .onReceive(keyboardWillHide) { _ in
-            withAnimation(.easeOut(duration: 0.25)) {
-                self.keyboardHeight = 0
-            }
-        }
-        .edgesIgnoringSafeArea(.bottom)
+        .navigationTitle("YKS Asistanı")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -137,7 +112,7 @@ struct MessageBubbleView: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
             if message.sender == .assistant {
-                Image(systemName: "bubble.left.fill")
+                Image(systemName: "graduationcap.fill")
                     .font(.system(size: 24))
                     .foregroundColor(.blue)
             }
@@ -174,5 +149,7 @@ struct MessageBubbleView: View {
 }
 
 #Preview {
-    AIAssistantView(viewModel: AIAssistantViewModel())
+    NavigationView {
+        ChatView()
+    }
 }
