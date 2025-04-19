@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct MainView: View {
     @StateObject private var drawerViewModel = DrawerViewModel()
@@ -71,7 +72,7 @@ struct MainView: View {
                 Button(action: {
                     // Notifications or profile action
                 }) {
-                    Image(systemName: "bell")
+                    Image(systemName: "")
                         .font(.title3)
                         .foregroundColor(.primary)
                 }
@@ -85,17 +86,16 @@ struct MainView: View {
             // Content based on selected drawer item
             switch drawerViewModel.selectedItem {
             case .dashboard:
-                DashboardView(viewModel: DashboardViewModel())
+                EnhancedDashboardView()
             case .studyPlan:
-                StudyPlanView(viewModel: StudyPlanViewModel())
+                StudyPlanView()
             case .subjectTracking:
                 KonuTakibiView()
             case .testResults:
                 TestResultsView(viewModel: TestResultsViewModel())
             case .aiAssistant:
-                AIAssistantView(viewModel: AIAssistantViewModel())
-            case .resources:
-                ResourcesView(viewModel: ResourcesViewModel())
+                ChatView()
+
             case .library:
                 NearbyLibrariesView(viewModel: NearbyLibrariesViewModel())
             case .timers:

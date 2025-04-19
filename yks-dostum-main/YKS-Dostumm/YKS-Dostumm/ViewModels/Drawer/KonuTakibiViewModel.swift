@@ -113,7 +113,7 @@ class KonuTakibiViewModel: ObservableObject {
         ]
         
         // Biyoloji kategorisi (boş kategori örneği)
-        var biyoloji = KonuKategori(name: "Biyoloji")
+        let biyoloji = KonuKategori(name: "Biyoloji")
         
         // Tarih kategorisi (çok az konu içeren kategori örneği)
         var tarih = KonuKategori(name: "Tarih")

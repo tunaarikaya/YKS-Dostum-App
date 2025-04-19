@@ -107,7 +107,7 @@ struct ExamCountdownView: View {
 }
 
 struct StudyProgressView: View {
-    let stats: StudyStats
+    let stats: DashboardStudyStats
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
