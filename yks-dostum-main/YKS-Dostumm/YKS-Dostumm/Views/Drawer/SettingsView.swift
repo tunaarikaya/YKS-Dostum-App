@@ -79,7 +79,7 @@ struct SettingsView: View {
                             Text("Karanlık Mod")
                         }
                     }
-                    .onChange(of: viewModel.isDarkMode) { _ in
+                    .onChange(of: viewModel.isDarkMode) { oldValue, newValue in
                         viewModel.toggleDarkMode()
                     }
                 }
@@ -109,7 +109,7 @@ struct SettingsView: View {
                             Text("Bildirimlere İzin Ver")
                         }
                     }
-                    .onChange(of: viewModel.notificationsEnabled) { _ in
+                    .onChange(of: viewModel.notificationsEnabled) { oldValue, newValue in
                         viewModel.toggleNotifications()
                     }
                     
@@ -125,7 +125,7 @@ struct SettingsView: View {
                                 displayedComponents: .hourAndMinute
                             )
                             .labelsHidden()
-                            .onChange(of: viewModel.dailyReminderTime) { newValue in
+                            .onChange(of: viewModel.dailyReminderTime) { oldValue, newValue in
                                 viewModel.updateReminderTime(newValue)
                             }
                         }

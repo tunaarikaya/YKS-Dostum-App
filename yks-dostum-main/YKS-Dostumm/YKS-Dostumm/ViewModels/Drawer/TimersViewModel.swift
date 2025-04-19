@@ -101,7 +101,6 @@ class TimersViewModel: ObservableObject {
             } catch {
                 self.errorMessage = "Pomodoro durumu yüklenemedi: \(error.localizedDescription)"
             }
-        }
         } else {
             // YKS sınavı için varsayılan bir geri sayım ekle
             let yksCountdown = CountdownTimer(name: "YKS Sınavına Kalan Süre", targetDate: yksExamDate, color: .blue)
@@ -380,9 +379,7 @@ class TimersViewModel: ObservableObject {
                 if currentPomodoroState == .running {
                     backgroundManager?.addTimer(
                         id: "pomodoro_\(timer.id)",
-                        targetDate: Date().addingTimeInterval(timeRemaining),
-                        title: "Pomodoro - \(timer.name)",
-                        message: currentPhaseText
+                        endTime: Date().addingTimeInterval(timeRemaining)
                     )
                 } else {
                     backgroundManager?.removeTimer(id: "pomodoro_\(timer.id)")
@@ -507,7 +504,7 @@ class TimersViewModel: ObservableObject {
     }
     
     func scheduleNotification() {
-        guard let selectedTimer = selectedPomodoroTimer, currentPomodoroState == .running else { return }
+        guard let _ = selectedPomodoroTimer, currentPomodoroState == .running else { return }
         
         let content = UNMutableNotificationContent()
         

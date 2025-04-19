@@ -34,8 +34,25 @@ extension Color: Codable {
     }
 }
 
+// Timer durumları
+enum TimerState: Codable {
+    case idle // Beklemede
+    case running // Çalışıyor
+    case paused // Duraklatıldı
+    case stopped // Durduruldu
+    case finished // Tamamlandı
+}
+
+// Pomodoro aşamaları
+enum PomodoroPhase: Codable {
+    case work // Çalışma
+    case `break` // Kısa mola
+    case longBreak // Uzun mola
+}
+
 // Pomodoro durumu için kullanılacak model
 struct PomodoroState: Codable {
+
     let timerState: TimerState
     let phase: PomodoroPhase
     let timeRemaining: TimeInterval
@@ -86,6 +103,7 @@ struct CountdownTimer: Identifiable, Codable, Equatable {
     
     static func == (lhs: CountdownTimer, rhs: CountdownTimer) -> Bool {
         return lhs.id == rhs.id
+    }
     
     init(name: String, targetDate: Date, color: Color = .blue) {
         self.name = name
@@ -101,20 +119,4 @@ struct CountdownTimer: Identifiable, Codable, Equatable {
     var isExpired: Bool {
         return Date() >= targetDate
     }
-}
-
-// Timer durumları
-enum TimerState: Codable {
-    case idle // Beklemede
-    case running // Çalışıyor
-    case paused // Duraklatıldı
-    case stopped // Durduruldu
-    case finished // Tamamlandı
-}
-
-// Pomodoro aşamaları
-enum PomodoroPhase: Codable {
-    case work // Çalışma
-    case `break` // Kısa mola
-    case longBreak // Uzun mola
 }
