@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DrawerView: View {
     @ObservedObject var viewModel: DrawerViewModel
+    @StateObject private var achievementsViewModel = AchievementsViewModel()
+    @State private var showFullAchievements = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -40,6 +42,27 @@ struct DrawerView: View {
                             viewModel.selectItem(item)
                         }
                     }
+                    
+                    // Rozetler Menü Öğesi
+                    DrawerItemView(
+                        icon: "medal.fill",
+                        title: "Rozetler",
+                        isSelected: false,
+                        color: .orange
+                    )
+                    .overlay(
+                        Text("\(achievementsViewModel.getCompletedAchievementsCount())/\(achievementsViewModel.getTotalAchievementsCount())")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(6)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                            .padding(.trailing, 8),
+                        alignment: .trailing
+                    )
+                    .onTapGesture {
+                        showFullAchievements = true
+                    }
                 }
                 .padding(.horizontal)
             }
@@ -55,6 +78,15 @@ struct DrawerView: View {
         .frame(width: 270)
         .background(Color(UIColor.systemBackground))
         .edgesIgnoringSafeArea(.vertical)
+        .sheet(isPresented: $showFullAchievements) {
+            NavigationView {
+                AchievementsView(viewModel: achievementsViewModel)
+                    .navigationTitle("Rozetlerim")
+                    .navigationBarItems(trailing: Button("Kapat") {
+                        showFullAchievements = false
+                    })
+            }
+        }
     }
 }
 

@@ -89,7 +89,7 @@ struct MainView: View {
             case .studyPlan:
                 StudyPlanView(viewModel: StudyPlanViewModel())
             case .subjectTracking:
-                SubjectTrackingView(viewModel: SubjectTrackingViewModel())
+                KonuTakibiView()
             case .testResults:
                 TestResultsView(viewModel: TestResultsViewModel())
             case .aiAssistant:
