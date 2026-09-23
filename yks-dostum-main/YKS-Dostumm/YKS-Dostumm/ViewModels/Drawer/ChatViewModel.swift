@@ -14,7 +14,7 @@ class ChatViewModel: ObservableObject {
     init() {
         // MARK: Gemini API anahtarınızı buraya ekleyin
         // Not: Bu sadece geliştirme amaçlıdır. Uygulama yayınlanmadan önce daha güvenli bir yaklaşım kullanın
-        let apiKey = "***REMOVED-GEMINI-KEY***"
+        let apiKey = ProcessInfo.processInfo.environment["GEMINI_API_KEY"] ?? ""
         self.geminiService = GeminiService(apiKey: apiKey)
         loadInitialMessages()
     }

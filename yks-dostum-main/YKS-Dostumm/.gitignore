@@ -27,6 +27,9 @@ Package.resolved
 
 # API Keys and Sensitive Data
 YKS-Dostumm/Utils/Constants.swift
+.env
+*.env
+.env.*
 
 # CocoaPods
 Pods/
